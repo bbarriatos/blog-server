@@ -1,13 +1,13 @@
 const express = require('express');
 const { check, validationResult } = require('express-validator');
 const User = require('../models/User');
-const bcrypt = require('bcryptjs');
 const uniqid = require('uniqid');
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
 const router = express.Router();
 
 router.get('/', (req, res) => {
-  res.send('express js');
+  res.json('Logged In');
 });
 
 router.post(
@@ -18,7 +18,7 @@ router.post(
   ],
   async (req, res) => {
     const err = validationResult(req);
-    const { username, email, password } = req.body;
+    const { email, password } = req.body;
 
     if (!err.isEmpty()) {
       return res.status(400).json({ errors: err.array() });
@@ -27,26 +27,24 @@ router.post(
     try {
       let checkEmail = await User.findOne({ user_email: email });
 
-      if (checkEmail) {
-        return res
-          .status(400)
-          .json({ errors: [{ msg: 'Email already exists' }] });
+      if (!checkEmail) {
+        return res.status(400).json({ error: 'Invalid Credentials' });
       }
 
-      const user = await new User({
-        user_username: username,
-        user_email: email,
-        user_password: password,
-      });
+      const loginMatch = await bcrypt.compare(
+        password,
+        checkEmail.user_password
+      );
 
-      const salt = await bcrypt.genSalt(10);
-      user.user_password = await bcrypt.hash(user.user_password, salt);
+      console.log(password, checkEmail.user_password);
 
-      await user.save();
+      if (!loginMatch) {
+        return res.status(400).json({ error: 'Invalid Credentials' });
+      }
 
       const payload = {
         user: {
-          id: user.id,
+          id: checkEmail.id,
         },
       };
 
