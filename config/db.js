@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const db = 'mongodb+srv://root:root@blog-todo.yypn0.mongodb.net/blog_server';
+const db = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@blog-todo.yypn0.mongodb.net/blog_server`;
 
 const connectDB = () => {
   try {

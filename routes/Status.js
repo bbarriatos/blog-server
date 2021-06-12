@@ -6,11 +6,13 @@ const router = express.Router();
 router.post(
   '/',
   [
-    check('name', 'Please set a status name')
-      .isLength({ min: 1, max: 100 })
-      .exists(),
+    check('name', 'Please set a status name').isLength({ min: 1, max: 100 }),
+    check('category', 'Please set a category name').isLength({
+      min: 1,
+      max: 100,
+    }),
   ],
-  (req, res) => {
+  async (req, res) => {
     const err = validationResult(req);
     const { name, category } = req.body;
 
@@ -18,14 +20,14 @@ router.post(
       return res.status(400).json({ errors: err.array() });
     }
 
-    const status = await new Status({
-      status_name: name,
-      status_category: category,
-    });
-
-    await status.save();
-
     try {
+      const status = await new Status({
+        status_name: name,
+        status_category: category,
+      });
+
+      await status.save();
+      res.json(status);
     } catch (error) {
       res.status(500).send('Server Error');
     }
