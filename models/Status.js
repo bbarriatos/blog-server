@@ -6,6 +6,9 @@ const StatusSchema = new Schema({
   status_name: {
     type: String,
   },
+  status_category: {
+    type: String,
+  },
 });
 
 module.exports = mongoose.model('status', StatusSchema);

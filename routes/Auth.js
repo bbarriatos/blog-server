@@ -36,8 +36,6 @@ router.post(
         checkEmail.user_password
       );
 
-      console.log(password, checkEmail.user_password);
-
       if (!loginMatch) {
         return res.status(400).json({ error: 'Invalid Credentials' });
       }

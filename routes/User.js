@@ -6,10 +6,6 @@ const uniqid = require('uniqid');
 const jwt = require('jsonwebtoken');
 const router = express.Router();
 
-router.get('/', (req, res) => {
-  res.send('express js');
-});
-
 router.post(
   '/',
   [
