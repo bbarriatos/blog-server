@@ -13,8 +13,21 @@ router.get('/', (req, res) => {
 router.post(
   '/',
   [
-    check('email', 'Please include a valid email').isEmail(),
-    check('password', 'Password is Required').exists(),
+    check('username', 'Please input your desired username').isLength({
+      min: 1,
+    }),
+    check('email', 'Please include a valid email')
+      .isLength({ min: 4, max: 100 })
+      .isEmail(),
+    check('password', 'Password is Required')
+      .isLength({ min: 8, max: 100 })
+      .exists(),
+    check('confirmPassword').custom((value, { req }) => {
+      if (value !== req.body.password) {
+        throw new Error('Password confirmation does not match password');
+      }
+      return true;
+    }),
   ],
   async (req, res) => {
     const err = validationResult(req);
@@ -60,6 +73,75 @@ router.post(
   }
 );
 
-router.put('/:id', (req, res) => {});
+router.put(
+  '/:id',
+  [
+    check('username', 'Please input your desired username')
+      .optional()
+      .isLength({
+        min: 1,
+      }),
+    check('email', 'Please include a valid email')
+      .optional()
+      .isLength({ min: 4, max: 100 })
+      .isEmail(),
+    check('password', 'Password is Required')
+      .isLength({ min: 8, max: 100 })
+      .optional()
+      .exists(),
+    check('confirmPassword')
+      .isLength({ min: 8, max: 100 })
+      .optional()
+      .custom((value, { req }) => {
+        if (value !== req.body.password) {
+          throw new Error('Password confirmation does not match password');
+        }
+        return true;
+      }),
+  ],
+  async (req, res) => {
+    const err = validationResult(req);
+    const { username, email, password } = req.body;
+    const user = await User.findById(req.params.id);
+
+    if (!err.isEmpty()) {
+      return res.status(400).json({ message: err.array() });
+    }
+
+    try {
+      let checkEmail = await User.findOne({ user_email: email });
+
+      if (checkEmail) {
+        return res
+          .status(400)
+          .json({ errors: [{ msg: 'Email already exists' }] });
+      }
+
+      const salt = await bcrypt.genSalt(10);
+
+      user.user_username = username;
+      user.user_email = email;
+      user.user_password = await bcrypt.hash(password, salt);
+
+      await user.save();
+
+      res.json(user);
+    } catch (error) {
+      res.status(500).send('Server Error');
+    }
+  }
+);
+
+router.delete('/:id', async (req, res) => {
+  try {
+    const user = await User.findByIdAndDelete(req.params.id);
+
+    await user.remove();
+
+    res.json('User Deleted');
+  } catch (error) {
+    res.status(500).send('Server Error');
+  }
+});
 
 module.exports = router;
