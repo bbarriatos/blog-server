@@ -3,6 +3,16 @@ const { check, validationResult } = require('express-validator');
 const Status = require('../models/Status');
 const router = express.Router();
 
+router.get('/', async (req, res) => {
+  try {
+    const status = await Status.find();
+
+    res.json(status);
+  } catch (error) {
+    res.status(500).json({ message: 'Server Error' });
+  }
+});
+
 router.post(
   '/',
   [

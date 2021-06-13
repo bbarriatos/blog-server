@@ -17,6 +17,14 @@ const TaskSchema = new Schema({
     type: String,
     default: Date.now(),
   },
+  user: {
+    type: Schema.Types.ObjectId,
+    ref: 'user',
+  },
+  status: {
+    type: Schema.Types.ObjectId,
+    ref: 'status',
+  },
 });
 
 module.exports = mongoose.model('tasks', TaskSchema);

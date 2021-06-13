@@ -6,6 +6,17 @@ const uniqid = require('uniqid');
 const jwt = require('jsonwebtoken');
 const router = express.Router();
 
+router.get('/', async (req, res) => {
+  try {
+    // Check first if admin is true
+    const status = await User.find();
+
+    res.json(status);
+  } catch (error) {
+    res.status(500).json({ message: 'Server Error' });
+  }
+});
+
 router.post(
   '/',
   [
