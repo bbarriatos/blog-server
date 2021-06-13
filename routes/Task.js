@@ -50,4 +50,41 @@ router.post(
   }
 );
 
+router.put('/:id', async (req, res) => {
+  const err = validationResult(req);
+  const { title, content, date, due, status } = req.body;
+
+  if (!err.isEmpty()) {
+    return res.status(400).json({ errors: err.array() });
+  }
+
+  try {
+    const task = await Task.findById(req.params.id);
+
+    task.task_title = title;
+    task.task_content = content;
+    task.task_date = date;
+    task.task_due = due;
+    task.status = status;
+
+    await task.save();
+
+    res.json(task);
+  } catch (error) {
+    res.status(500).json({ message: 'Server Error' });
+  }
+});
+
+router.delete('/:id', async (req, res) => {
+  try {
+    const task_due = await Task.findByIdAndDelete(req.params.id);
+
+    await task_due.remove();
+
+    res.json('Task Deleted');
+  } catch (error) {
+    res.status(500).send('Server Error');
+  }
+});
+
 module.exports = router;
