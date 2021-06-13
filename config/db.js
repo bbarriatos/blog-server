@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
-const db = `mongodb+srv://root:dE0U3Rqivo24MEOV@blog-todo.yypn0.mongodb.net/blog_server`;
 
 const connectDB = () => {
+  const db = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@blog-todo.yypn0.mongodb.net/blog_server`;
+
   try {
     mongoose.connect(db, {
       useUnifiedTopology: true,
