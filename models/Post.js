@@ -15,8 +15,13 @@ const PostSchema = new Schema({
   },
   comments: [
     {
-      type: Schema.Types.ObjectId,
-      ref: 'comment',
+      user: {
+        type: Schema.Types.ObjectId,
+        ref: 'users',
+      },
+      comment_content: {
+        type: String,
+      },
     },
   ],
   user: {

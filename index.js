@@ -12,6 +12,8 @@ app.use('/api/users', require('./routes/User'));
 app.use('/api/auth', require('./routes/Auth'));
 app.use('/api/status', require('./routes/Status'));
 app.use('/api/task', require('./routes/Task'));
+app.use('/api/category', require('./routes/Category'));
+app.use('/api/posts', require('./routes/Posts'));
 
 app.listen(5000, () => {
   console.log(`Listening on port 5000`);
