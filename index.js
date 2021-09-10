@@ -1,12 +1,17 @@
+require('dotenv').config();
 const express = require('express');
 const app = express();
 const connectDB = require('./config/db');
 const path = require('path');
 const handlebars = require('express-handlebars');
-const orderid = require('order-id')('mysecret');
-const id = orderid.generate();
+const bcrypt = require('bcryptjs');
+const session = require('express-session');
+const passport = require('passport');
+const localStrategy = require('passport-local').Strategy;
+const { isLoggedIn, isLoggedOut } = require('./config/authorizeUser');
+const User = require('./models/User');
 
-require('dotenv').config();
+connectDB();
 
 app.set('view engine', 'hbs');
 app.engine(
@@ -24,30 +29,98 @@ app.engine(
   })
 );
 
-connectDB();
-
 app.use(express.static('public'));
+app.use(
+  session({
+    secret: 'verygoodsecret',
+    resave: false,
+    saveUninitialized: true,
+  })
+);
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json({ extended: false }));
 
-// app.use('/', require('./routes/User'));
+// Passport.js
+app.use(passport.initialize());
+app.use(passport.session());
 
-app.use('/api/users', require('./routes/User'));
-app.use('/api/auth', require('./routes/Auth'));
-app.use('/api/status', require('./routes/Status'));
-app.use('/api/task', require('./routes/Task'));
-app.use('/api/category', require('./routes/Category'));
-app.use('/api/posts', require('./routes/Posts'));
+passport.serializeUser(function (user, done) {
+  done(null, user.id);
+});
+
+passport.deserializeUser(function (id, done) {
+  User.findById(id, function (err, user) {
+    done(err, user);
+  });
+});
+
+passport.use(
+  new localStrategy(function (email, password, done) {
+    User.findOne({ user_email: email }, function (err, user) {
+      if (err) return done(err);
+      if (!user) return done(null, false, { message: 'Incorrect Email.' });
+
+      bcrypt.compare(password, user.user_password, function (err, res) {
+        if (err) return done(err);
+        if (res === false)
+          return done(null, false, { message: 'Incorrect Password.' });
+
+        return done(null, user);
+      });
+    });
+  })
+);
 
 const defaultPageConfig = {
   title: 'Login | Bon Blog Site',
   listExists: true,
 };
 
-app.get('/', (req, res) => {
-  res.render('main', {
-    ...defaultPageConfig,
-    bodyClass: `bg-gradient-primary`,
-  });
+app.get('/', isLoggedIn, (req, res) => {
+  try {
+    res.render('home/index', {
+      ...defaultPageConfig,
+      title: 'Home | Bon Blog Site',
+      bodyClass: 'bg-gradient-primary',
+      layout: 'dashboard',
+      username: req.user.user_username,
+      email: req.user.user_email,
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Server Error' });
+  }
 });
+
+app.get('/login', isLoggedOut, (req, res) => {
+  try {
+    res.render('main', {
+      ...defaultPageConfig,
+      bodyClass: 'bg-gradient-primary',
+      error: req.query.error,
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Server Error' });
+  }
+});
+
+app.post(
+  '/login',
+  passport.authenticate('local', {
+    successRedirect: '/',
+    failureRedirect: '/login?error=true',
+  })
+);
+
+app.get('/logout', function (req, res) {
+  req.logout();
+  res.redirect('/');
+});
+
+// app.use('/register', require('./routes/User'));
+app.use('/posts', isLoggedIn, require('./routes/Posts'));
+// app.use('/api/status', require('./routes/Status'));
+// app.use('/api/task', require('./routes/Task'));
+// app.use('/api/category', require('./routes/Category'));
 
 app.listen(5000, () => {
   console.log(`Listening on port 5000`);
