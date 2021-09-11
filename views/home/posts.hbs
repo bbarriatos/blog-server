@@ -1,7 +1,7 @@
+<h1>Posts</h1>
+<p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Debitis, cum autem ullam nostrum pariatur id provident, ut
+    quas at itaque distinctio nihil qui perferendis. Natus placeat quis doloribus cum nemo.</p>
 <div class="card shadow mb-12">
-    <div class="card-header py-3">
-        <h6 class="m-0 font-weight-bold text-primary">Posts</h6>
-    </div>
     <div class="card-body">
         <div class="table-responsive">
             <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
@@ -11,7 +11,9 @@
                         <th>Date</th>
                         <th>Title</th>
                         <th>Content</th>
+                        <th>Category</th>
                         <th>Status</th>
+
                     </tr>
                 </thead>
                 <tbody>
@@ -23,6 +25,7 @@
                         <td>{{post_date}}</td>
                         <td>{{post_title}}</td>
                         <td>{{post_desc}}</td>
+                        <td>Content</td>
                         <td>{{status}}</td>
                         {{/if}}
                         {{/each}}
@@ -35,6 +38,7 @@
                         <th>#</th>
                         <th>Date</th>
                         <th>Title</th>
+                        <th>Content</th>
                         <th>Content</th>
                         <th>Status</th>
                     </tr>
