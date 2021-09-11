@@ -4,15 +4,32 @@ const pageConfig = require('../config/defaultPageConfig');
 const Posts = require('../models/Post');
 const router = express.Router();
 
+// router.all('/*', isLoggedIn, (req, res, next) => {
+//   req.app.locals.layout = 'dashboard';
+//   next();
+// });
+
 router.get('/', async (req, res) => {
   try {
     const posts = await Posts.find();
 
-    res.render('home/posts', {
+    res.render('home/posts/posts', {
       ...pageConfig,
       title: 'Posts | Bon Blog Site',
       bodyClass: `bg-gradient-primary`,
       post_list: posts,
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Server Error' });
+  }
+});
+
+router.get('/addpost', (req, res) => {
+  try {
+    res.render('home/posts/addPost', {
+      ...pageConfig,
+      title: 'Add Post | Bon Blog Site',
+      bodyClass: `bg-gradient-primary`,
     });
   } catch (error) {
     res.status(500).json({ message: 'Server Error' });
