@@ -9,6 +9,7 @@ const session = require('express-session');
 const passport = require('passport');
 const localStrategy = require('passport-local').Strategy;
 const { isLoggedIn, isLoggedOut } = require('./config/authorizeUser');
+const pageConfig = require('./config/defaultPageConfig');
 const User = require('./models/User');
 
 connectDB();
@@ -71,20 +72,12 @@ passport.use(
   })
 );
 
-const defaultPageConfig = {
-  title: 'Login | Bon Blog Site',
-  listExists: true,
-};
-
 app.get('/', isLoggedIn, (req, res) => {
   try {
     res.render('home/index', {
-      ...defaultPageConfig,
+      ...pageConfig,
       title: 'Home | Bon Blog Site',
       bodyClass: 'bg-gradient-primary',
-      layout: 'dashboard',
-      username: req.user.user_username,
-      email: req.user.user_email,
     });
   } catch (error) {
     res.status(500).json({ message: 'Server Error' });
@@ -94,7 +87,7 @@ app.get('/', isLoggedIn, (req, res) => {
 app.get('/login', isLoggedOut, (req, res) => {
   try {
     res.render('main', {
-      ...defaultPageConfig,
+      ...pageConfig,
       bodyClass: 'bg-gradient-primary',
       error: req.query.error,
     });

@@ -1,1 +1,45 @@
-<h1>Posts</h1>
+<div class="card shadow mb-12">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Posts</h6>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Date</th>
+                        <th>Title</th>
+                        <th>Content</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each post_list}}
+                    <tr>
+                        {{#each this}}
+                        {{#if post_title}}
+                        <td>{{_id}}</td>
+                        <td>{{post_date}}</td>
+                        <td>{{post_title}}</td>
+                        <td>{{post_desc}}</td>
+                        <td>{{status}}</td>
+                        {{/if}}
+                        {{/each}}
+                    </tr>
+                    {{/each}}
+                </tbody>
+
+                <tfoot>
+                    <tr>
+                        <th>#</th>
+                        <th>Date</th>
+                        <th>Title</th>
+                        <th>Content</th>
+                        <th>Status</th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</div>

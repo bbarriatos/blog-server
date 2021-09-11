@@ -1,6 +1,10 @@
+const pageConfig = require('../config/defaultPageConfig');
+
 const isLoggedIn = (req, res, next) => {
   if (req.isAuthenticated()) {
     req.app.locals.layout = 'dashboard';
+    pageConfig.username = req.user.user_username;
+
     return next();
   }
 

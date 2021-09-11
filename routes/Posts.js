@@ -1,21 +1,18 @@
 const express = require('express');
 const { check, validationResult } = require('express-validator');
+const pageConfig = require('../config/defaultPageConfig');
 const Posts = require('../models/Post');
 const router = express.Router();
-const { isLoggedIn, isLoggedOut } = require('../config/authorizeUser');
-
-const defaultPageConfig = {
-  title: 'Posts | Bon Blog Site',
-  listExists: true,
-  username: null,
-  email: null,
-};
 
 router.get('/', async (req, res) => {
   try {
+    const posts = await Posts.find();
+
     res.render('home/posts', {
-      ...defaultPageConfig,
+      ...pageConfig,
+      title: 'Posts | Bon Blog Site',
       bodyClass: `bg-gradient-primary`,
+      post_list: posts,
     });
   } catch (error) {
     res.status(500).json({ message: 'Server Error' });
@@ -45,7 +42,7 @@ router.post(
 
       await post.save();
 
-      res.json(post);
+      res.redirect('/posts');
     } catch (error) {
       res.status(500).json({ message: 'Server Error' });
     }
