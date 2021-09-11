@@ -6,7 +6,7 @@
         <div class="table-responsive">
             <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                 <thead>
-                    <tr>
+                    <tr class="bg-primary text-white">
                         <th>#</th>
                         <th>Date</th>
                         <th>Title</th>
@@ -26,12 +26,15 @@
                         <td>{{status}}</td>
                         {{/if}}
                         {{/each}}
+                        {{else}}
+                        <td class="text-danger text-center" colspan="5"><strong>No content</strong></td>
                     </tr>
+
                     {{/each}}
                 </tbody>
 
                 <tfoot>
-                    <tr>
+                    <tr class="bg-primary text-white">
                         <th>#</th>
                         <th>Date</th>
                         <th>Title</th>

@@ -36,6 +36,18 @@ router.get('/addpost', (req, res) => {
   }
 });
 
+router.get('/:postId', (req, res) => {
+  try {
+    res.render('home/posts/viewPost', {
+      ...pageConfig,
+      title: 'Post | Bon Blog Site',
+      bodyClass: `bg-gradient-primary`,
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Server Error' });
+  }
+});
+
 router.post(
   '/',
   [

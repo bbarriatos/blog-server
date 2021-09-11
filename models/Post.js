@@ -9,9 +9,23 @@ const PostSchema = new Schema({
   post_desc: {
     type: String,
   },
+  file: {
+    type: String,
+  },
   post_date: {
     type: String,
     default: Date.now(),
+  },
+  category: {
+    type: Schema.Types.ObjectId,
+    ref: 'category',
+  },
+  status: {
+    type: Schema.Types.ObjectId,
+    ref: 'status',
+  },
+  allow_comments: {
+    type: Boolean,
   },
   comments: [
     {
@@ -27,14 +41,6 @@ const PostSchema = new Schema({
   user: {
     type: Schema.Types.ObjectId,
     ref: 'users',
-  },
-  category: {
-    type: Schema.Types.ObjectId,
-    ref: 'category',
-  },
-  status: {
-    type: Schema.Types.ObjectId,
-    ref: 'status',
   },
 });
 
