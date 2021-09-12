@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema;
+const formatYmd = (date) => date.toISOString().slice(0, 10);
 
 const PostSchema = new Schema({
   post_title: {
@@ -14,7 +15,7 @@ const PostSchema = new Schema({
   },
   post_date: {
     type: String,
-    default: Date.now(),
+    default: formatYmd(new Date()),
   },
   category: {
     type: Schema.Types.ObjectId,

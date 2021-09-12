@@ -4,14 +4,17 @@
 <div class="card shadow mb-12">
     <div class="card-body">
         <div class="table-responsive">
-            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+            <table class="table table-striped" id="dataTable" width="100%" cellspacing="0">
                 <thead>
                     <tr class="bg-primary text-white">
                         <th>#</th>
                         <th>Date</th>
                         <th>Title</th>
                         <th>Category</th>
+                        <th>Allow Comments</th>
                         <th>Status</th>
+                        <th>User</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -23,11 +26,26 @@
                         <td>{{post_date}}</td>
                         <td>{{post_title}}</td>
                         <td>[]</td>
+                        <td>{{#if allow_comments}}
+                            <input type="checkbox" id="customCheck" checked="checked" disabled>
+                            {{else}}
+                            <input type="checkbox" id="customCheck" checked="" disabled>
+                            {{/if}}
+                        </td>
                         <td>{{status}}</td>
+                        <td>User</td>
+                        <td>
+                            <a href="#" class="btn btn-success btn-circle btn-sm">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a href="#" class="btn btn-danger btn-circle btn-sm">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </td>
                         {{/if}}
                         {{/each}}
                         {{else}}
-                        <td class="text-danger text-center" colspan="5"><strong>No content</strong></td>
+                        <td class="text-danger text-center" colspan="8"><strong>No content</strong></td>
                     </tr>
 
                     {{/each}}
@@ -39,10 +57,16 @@
                         <th>Date</th>
                         <th>Title</th>
                         <th>Category</th>
+                        <th>Comments</th>
                         <th>Status</th>
+                        <th>User</th>
+                        <th>Action</th>
                     </tr>
                 </tfoot>
             </table>
+
+            <div class="dataTables_info" id="dataTable_info" role="status" aria-live="polite">Showing 1 to 1 of
+                {{number_of_post}} entries</div>
         </div>
     </div>
 </div>

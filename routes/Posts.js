@@ -11,13 +11,14 @@ const router = express.Router();
 
 router.get('/', async (req, res) => {
   try {
-    const posts = await Posts.find();
-
-    res.render('home/posts/posts', {
-      ...pageConfig,
-      title: 'Posts | Bon Blog Site',
-      bodyClass: `bg-gradient-primary`,
-      post_list: posts,
+    Posts.find({}).then((posts) => {
+      res.render('home/posts/posts', {
+        ...pageConfig,
+        title: 'Posts | Bon Blog Site',
+        bodyClass: `bg-gradient-primary`,
+        post_list: posts,
+        number_of_post: posts.length,
+      });
     });
   } catch (error) {
     res.status(500).json({ message: 'Server Error' });
@@ -66,6 +67,7 @@ router.post(
       const post = await new Posts({
         post_title: title,
         post_desc: content,
+        allow_comments: true,
         status: '60c50dc4e10a9750b826edc3',
       });
 
