@@ -3,6 +3,16 @@
     quas at itaque distinctio nihil qui perferendis. Natus placeat quis doloribus cum nemo.</p>
 <div class="card shadow mb-12">
     <div class="card-body">
+
+        <div class="col-sm-12 col-md-6">
+            <div id="dataTable_filter" class="dataTables_filter">
+                <label><span>Search:</span> <input type="search" class="form-control form-control-sm" placeholder=""
+                        aria-controls="dataTable"> <a href="#" class="btn btn-primary btn-icon-split btn-sm">
+                        <span class="text">Search</span>
+                    </a></label>
+            </div>
+        </div>
+
         <div class="table-responsive">
             <table class="table table-striped" id="dataTable" width="100%" cellspacing="0">
                 <thead>
@@ -20,37 +30,33 @@
                 <tbody>
                     {{#each post_list}}
                     <tr>
-                        {{#each this}}
-                        {{#if post_title}}
                         <td>{{_id}}</td>
                         <td>{{post_date}}</td>
                         <td>{{post_title}}</td>
                         <td>[]</td>
                         <td>{{#if allow_comments}}
-                            <input type="checkbox" id="customCheck" checked="checked" disabled>
+                            <input type="checkbox" id="customCheck" disabled="true" checked>
                             {{else}}
-                            <input type="checkbox" id="customCheck" checked="" disabled>
+                            <input type="checkbox" id="customCheck" disabled="true">
                             {{/if}}
                         </td>
                         <td>{{status}}</td>
                         <td>User</td>
                         <td>
-                            <a href="#" class="btn btn-success btn-circle btn-sm">
+                            <a href="/posts/{{_id}}" class="btn btn-success btn-circle btn-sm">
                                 <i class="fas fa-edit"></i>
                             </a>
-                            <a href="#" class="btn btn-danger btn-circle btn-sm">
-                                <i class="fas fa-trash"></i>
-                            </a>
+
+                            <form action="/posts/{{_id}}?_method=DELETE" method="post">
+                                <button class="btn btn-danger btn-circle btn-sm" type="submit"><i
+                                        class="fas fa-trash"></i></button>
+                            </form>
                         </td>
-                        {{/if}}
-                        {{/each}}
                         {{else}}
                         <td class="text-danger text-center" colspan="8"><strong>No content</strong></td>
                     </tr>
-
                     {{/each}}
                 </tbody>
-
                 <tfoot>
                     <tr class="bg-primary text-white">
                         <th>#</th>

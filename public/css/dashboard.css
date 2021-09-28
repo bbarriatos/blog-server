@@ -1,0 +1,4 @@
+.dataTables_filter .form-control, .dataTables_length .form-control {
+    display: inline-block;
+    width: auto;
+}

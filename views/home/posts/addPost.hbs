@@ -1,4 +1,4 @@
-<form class="user" action="/login" method="POST">
+<form class="user" action="/posts" method="POST" enctype="multipart/form-data">
     <div class="card mb-4 text-white bg-danger">
         <div class="card-body">
             Errors or Validation
@@ -21,7 +21,7 @@
                     </div>
                     <div class="form-group">
                         <div class="custom-control custom-checkbox small">
-                            <input type="checkbox" class="custom-control-input" id="customCheck">
+                            <input type="checkbox" name="allow_comments" class="custom-control-input" id="customCheck">
                             <label class="custom-control-label" for="customCheck">Allow Comments</label>
                         </div>
                     </div>
@@ -53,7 +53,7 @@
                     <h6 class="m-0 font-weight-bold text-primary">Featured Image</h6>
                 </div>
                 <div class="card-body">
-                    File Upload
+                    <input type="file" name="featuredImage" class="btn btn-primary w100" id="customFile">
                 </div>
             </div>
         </div>

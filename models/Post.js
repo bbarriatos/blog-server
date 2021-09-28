@@ -6,9 +6,11 @@ const formatYmd = (date) => date.toISOString().slice(0, 10);
 const PostSchema = new Schema({
   post_title: {
     type: String,
+    require: true,
   },
   post_desc: {
     type: String,
+    require: true,
   },
   file: {
     type: String,
@@ -27,6 +29,7 @@ const PostSchema = new Schema({
   },
   allow_comments: {
     type: Boolean,
+    default: false,
   },
   comments: [
     {

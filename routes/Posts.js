@@ -1,13 +1,11 @@
 const express = require('express');
 const { check, validationResult } = require('express-validator');
-const pageConfig = require('../config/defaultPageConfig');
+const { v4: uuidv4 } = require('uuid');
+const { pageConfig, uploadDir } = require('../config/defaultPageConfig');
 const Posts = require('../models/Post');
+const { uploadIsEmpty } = require('../helpers/upload-helper');
 const router = express.Router();
-
-// router.all('/*', isLoggedIn, (req, res, next) => {
-//   req.app.locals.layout = 'dashboard';
-//   next();
-// });
+const fs = require('fs');
 
 router.get('/', async (req, res) => {
   try {
@@ -39,10 +37,13 @@ router.get('/addpost', (req, res) => {
 
 router.get('/:postId', (req, res) => {
   try {
-    res.render('home/posts/viewPost', {
-      ...pageConfig,
-      title: 'Post | Bon Blog Site',
-      bodyClass: `bg-gradient-primary`,
+    Posts.findOne({ _id: req.params.postId }).then((postData) => {
+      res.render('home/posts/editPost', {
+        ...pageConfig,
+        title: 'Update Post | Bon Blog Site',
+        bodyClass: `bg-gradient-primary`,
+        post: postData,
+      });
     });
   } catch (error) {
     res.status(500).json({ message: 'Server Error' });
@@ -56,19 +57,29 @@ router.post(
     check('content', 'Content is required').exists(),
   ],
   async (req, res) => {
-    const err = validationResult(req);
-    const { title, content } = req.body;
+    // const err = validationResult(req);
+    const { title, content, allow_comments } = req.body;
 
-    if (!err.isEmpty()) {
-      return res.status(400).json({ errors: err.array() });
+    let filename = '';
+
+    if (!uploadIsEmpty(req.files)) {
+      let file = req.files.featuredImage;
+      const fileId = uuidv4();
+      filename = `${fileId}x${file.name}`;
+
+      file.mv('./public/uploads/' + filename, (err) => {
+        if (err) throw err;
+      });
     }
 
     try {
       const post = await new Posts({
         post_title: title,
         post_desc: content,
-        allow_comments: true,
+        file: filename,
+        allow_comments: allow_comments ? 'true' : 'false',
         status: '60c50dc4e10a9750b826edc3',
+        comments: [],
       });
 
       await post.save();
@@ -103,13 +114,15 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:postId', async (req, res) => {
   try {
-    const post = await Posts.findByIdAndDelete(req.params.id);
-
-    await post.remove();
-
-    res.json('Post Deleted');
+    Posts.findOne({ _id: req.params.postId }).then((post) => {
+      console.log(uploadDir);
+      fs.unlink(uploadDir + post.file, (err) => {
+        post.remove();
+        res.redirect('/posts');
+      });
+    });
   } catch (error) {
     res.status(500).send('Server Error');
   }

@@ -3,21 +3,29 @@ const express = require('express');
 const app = express();
 const connectDB = require('./config/db');
 const path = require('path');
+const Handlebars = require('handlebars');
+const {
+  allowInsecurePrototypeAccess,
+} = require('@handlebars/allow-prototype-access');
 const handlebars = require('express-handlebars');
 const bcrypt = require('bcryptjs');
 const session = require('express-session');
+const methodOverride = require('method-override');
 const passport = require('passport');
 const localStrategy = require('passport-local').Strategy;
 const { isLoggedIn, isLoggedOut } = require('./config/authorizeUser');
+const upload = require('express-fileupload');
 const pageConfig = require('./config/defaultPageConfig');
 const User = require('./models/User');
 
 connectDB();
 
 app.set('view engine', 'hbs');
+app.use(upload());
 app.engine(
   'hbs',
   handlebars({
+    handlebars: allowInsecurePrototypeAccess(Handlebars),
     layoutsDir: __dirname + '/views/layouts',
     extname: 'hbs',
     defaultLayout: 'index',
@@ -40,6 +48,7 @@ app.use(
 );
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json({ extended: false }));
+app.use(methodOverride('_method'));
 
 // Passport.js
 app.use(passport.initialize());
