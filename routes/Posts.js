@@ -117,7 +117,6 @@ router.put('/:id', async (req, res) => {
 router.delete('/:postId', async (req, res) => {
   try {
     Posts.findOne({ _id: req.params.postId }).then((post) => {
-      console.log(uploadDir);
       fs.unlink(uploadDir + post.file, (err) => {
         post.remove();
         res.redirect('/posts');

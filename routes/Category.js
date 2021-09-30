@@ -1,13 +1,35 @@
 const express = require('express');
 const { check, validationResult } = require('express-validator');
+const { pageConfig } = require('../config/defaultPageConfig');
 const Category = require('../models/Category');
 const router = express.Router();
 
 router.get('/', async (req, res) => {
   try {
-    const category = await Category.find();
+    Category.find({}).then((category) => {
+      res.render('home/categories/index', {
+        ...pageConfig,
+        title: 'Category | Bon Blog Site',
+        bodyClass: `bg-gradient-primary`,
+        category_list: category,
+        number_of_post: category.length,
+      });
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Server Error' });
+  }
+});
 
-    res.json(category);
+router.get('/:id', async (req, res) => {
+  try {
+    Category.findOne({ _id: req.params.id }).then((category) => {
+      res.render('home/categories/editCategory', {
+        ...pageConfig,
+        title: 'Category | Bon Blog Site',
+        bodyClass: `bg-gradient-primary`,
+        category: category,
+      });
+    });
   } catch (error) {
     res.status(500).json({ message: 'Server Error' });
   }
@@ -15,10 +37,10 @@ router.get('/', async (req, res) => {
 
 router.post(
   '/',
-  [check('name', 'Please set a category name').isLength({ min: 1, max: 100 })],
+  [check('title', 'Please set a category name').isLength({ min: 1, max: 100 })],
   async (req, res) => {
     const err = validationResult(req);
-    const { name } = req.body;
+    const { title } = req.body;
 
     if (!err.isEmpty()) {
       return res.status(400).json({ errors: err.array() });
@@ -26,37 +48,42 @@ router.post(
 
     try {
       const category = await new Category({
-        category_name: name,
+        category_name: title,
       });
 
       await category.save();
-      res.json(category);
+
+      res.redirect('/category');
     } catch (error) {
       res.status(500).send('Server Error');
     }
   }
 );
 
-router.put('/:id', async (req, res) => {
-  const err = validationResult(req);
-  const { name } = req.body;
+router.put(
+  '/:id',
+  [check('title', 'Please set a category name').isLength({ min: 1, max: 100 })],
+  async (req, res) => {
+    const err = validationResult(req);
+    const { title } = req.body;
 
-  if (!err.isEmpty()) {
-    return res.status(400).json({ errors: err.array() });
+    if (!err.isEmpty()) {
+      return res.status(400).json({ errors: err.array() });
+    }
+
+    try {
+      const category = await Category.findById(req.params.id);
+
+      category.category_name = title;
+
+      await category.save();
+
+      res.redirect('/category');
+    } catch (error) {
+      res.status(500).json({ message: 'Server Error' });
+    }
   }
-
-  try {
-    const category = await Category.findById(req.params.id);
-
-    category.category_name = name;
-
-    await category.save();
-
-    res.json(category);
-  } catch (error) {
-    res.status(500).json({ message: 'Server Error' });
-  }
-});
+);
 
 router.delete('/:id', async (req, res) => {
   try {
@@ -64,7 +91,7 @@ router.delete('/:id', async (req, res) => {
 
     await category.remove();
 
-    res.json('Category Deleted');
+    res.redirect('/category');
   } catch (error) {
     res.status(500).send('Server Error');
   }

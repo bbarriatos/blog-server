@@ -1,0 +1,70 @@
+<h1>Categories</h1>
+<div class="card mb-4 text-white bg-danger">
+    <div class="card-body">
+        Errors or Validation
+    </div>
+</div>
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Add Category</h6>
+    </div>
+    <div class="card-body">
+        <form class="user" action="/category" method="POST">
+
+
+            <div class="form-group">
+                <input type="text" name="title" class="form-control form-control-user" id="exampleInputTitle"
+                    aria-describedby="titleHelp" placeholder="Title...">
+            </div>
+
+            <input type="submit" value="Submit" class="btn btn-primary btn-user btn-block">
+        </form>
+    </div>
+
+</div>
+
+
+
+<div class="mt-5 table-responsive">
+    <table class="table table-striped" id="dataTable" cellspacing="0">
+        <thead>
+            <tr class="bg-primary text-white">
+                <th>#</th>
+                <th>Categories</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each category_list}}
+            <tr>
+                <td>{{_id}}</td>
+                <td>{{category_name}}</td>
+                <td>
+                    <a href="/category/{{_id}}" class="btn btn-success btn-circle btn-sm">
+                        <i class="fas fa-edit"></i>
+                    </a>
+
+                    <form action="/category/{{_id}}?_method=DELETE" method="post">
+                        <button class="btn btn-danger btn-circle btn-sm" type="submit"><i
+                                class="fas fa-trash"></i></button>
+                    </form>
+                </td>
+
+                {{else}}
+                <td class="text-danger text-center" colspan="8"><strong>No content</strong></td>
+            </tr>
+            {{/each}}
+        </tbody>
+        <tfoot>
+            <tr class="bg-primary text-white">
+                <th>#</th>
+                <th>Categories</th>
+                <th></th>
+            </tr>
+        </tfoot>
+    </table>
+
+    <div class="dataTables_info" id="dataTable_info" role="status" aria-live="polite">Showing 1 to 1 of
+        entries</div>
+</div>
