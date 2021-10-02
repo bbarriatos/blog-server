@@ -1,5 +1,5 @@
 <div>
-    <form action="#" method="POST">
+    <form action="/posts/{{post.id}}?_method=PUT" method="POST" enctype="multipart/form-data">
         <div class="card mb-4 text-white bg-danger">
             <div class="card-body">
                 Errors or Validation
@@ -23,8 +23,8 @@
                         </div>
                         <div class="form-group">
                             <div class="custom-control custom-checkbox small">
-                                <input type="checkbox" class="custom-control-input" id="customCheck" {{#if
-                                    post.allow_comments }} checked="checked" {{/if}}>
+                                <input type="checkbox" name="allow_comments" class="custom-control-input"
+                                    id="customCheck" {{#if post.allow_comments }} checked="checked" {{/if}}>
                                 <label class="custom-control-label" for="customCheck">Allow Comments</label>
                             </div>
                         </div>
@@ -33,12 +33,17 @@
                 </div>
             </div>
             <div class="col-lg-4 col-md-4 col-sm-12">
+
                 <div class="card shadow mb-4">
                     <div class="card-header py-3">
-                        <h6 class="m-0 font-weight-bold text-primary">Date &amp; Status</h6>
+                        <h6 class="m-0 font-weight-bold text-primary">Status</h6>
                     </div>
                     <div class="card-body">
-                        {{post.post_date}} &amp; Status: {{post.status}}
+                        <select class="w-100 p-2 btn btn-primary" name="category" id="category">
+                            {{#each status}}
+                            <option value={{id}}>{{status_name}}</option>
+                            {{/each}}
+                        </select>
                     </div>
                 </div>
 
@@ -47,7 +52,11 @@
                         <h6 class="m-0 font-weight-bold text-primary">Category</h6>
                     </div>
                     <div class="card-body">
-                        Checkbox
+                        <select class="w-100 p-2 btn btn-primary" name="category" id="category">
+                            {{#each categories}}
+                            <option value={{id}}>{{category_name}}</option>
+                            {{/each}}
+                        </select>
                     </div>
                 </div>
 
@@ -56,7 +65,13 @@
                         <h6 class="m-0 font-weight-bold text-primary">Featured Image</h6>
                     </div>
                     <div class="card-body">
-                        File Upload
+                        {{#if post.file}}
+                        <img src="/uploads/{{post.file}}" alt="" class="w-100 mb-4">
+                        {{else}}
+                        <p>No Image Uploaded</p>
+                        {{/if}}
+                        <input type="file" name="featuredImage" class="btn btn-primary w-100" id="featuredImage"
+                            value="./public/uploads/{{post.file}}">
                     </div>
                 </div>
             </div>

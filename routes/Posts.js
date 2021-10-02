@@ -3,48 +3,65 @@ const { check, validationResult } = require('express-validator');
 const { v4: uuidv4 } = require('uuid');
 const { pageConfig, uploadDir } = require('../config/defaultPageConfig');
 const Posts = require('../models/Post');
+const Category = require('../models/Category');
+const Status = require('../models/Status');
 const { uploadIsEmpty } = require('../helpers/upload-helper');
 const router = express.Router();
 const fs = require('fs');
 
 router.get('/', async (req, res) => {
   try {
-    Posts.find({}).then((posts) => {
-      res.render('home/posts/posts', {
-        ...pageConfig,
-        title: 'Posts | Bon Blog Site',
-        bodyClass: `bg-gradient-primary`,
-        post_list: posts,
-        number_of_post: posts.length,
+    Posts.find({})
+      .populate({ path: 'category', select: 'category_name -_id' })
+      .populate({ path: 'status', select: 'status_name -_id' })
+      .then((posts) => {
+        res.render('home/posts/posts', {
+          ...pageConfig,
+          title: 'Posts | Bon Blog Site',
+          bodyClass: `bg-gradient-primary`,
+          post_list: posts,
+          number_of_post: posts.length,
+        });
       });
-    });
   } catch (error) {
     res.status(500).json({ message: 'Server Error' });
   }
 });
 
-router.get('/addpost', (req, res) => {
+router.get('/addpost', async (req, res) => {
   try {
+    const categories = await Category.find();
+    const status = await Status.find();
+
     res.render('home/posts/addPost', {
       ...pageConfig,
       title: 'Add Post | Bon Blog Site',
       bodyClass: `bg-gradient-primary`,
+      categories: categories,
+      status: status.filter((stat) => stat.status_category === 'Posts'),
     });
   } catch (error) {
     res.status(500).json({ message: 'Server Error' });
   }
 });
 
-router.get('/:postId', (req, res) => {
+router.get('/:postId', async (req, res) => {
   try {
-    Posts.findOne({ _id: req.params.postId }).then((postData) => {
-      res.render('home/posts/editPost', {
-        ...pageConfig,
-        title: 'Update Post | Bon Blog Site',
-        bodyClass: `bg-gradient-primary`,
-        post: postData,
+    const categories = await Category.find();
+    const status = await Status.find();
+
+    Posts.findOne({ _id: req.params.postId })
+      .populate('category')
+      .then((postData) => {
+        res.render('home/posts/editPost', {
+          ...pageConfig,
+          title: 'Update Post | Bon Blog Site',
+          bodyClass: `bg-gradient-primary`,
+          post: postData,
+          categories: categories,
+          status: status.filter((stat) => stat.status_category === 'Posts'),
+        });
       });
-    });
   } catch (error) {
     res.status(500).json({ message: 'Server Error' });
   }
@@ -57,8 +74,12 @@ router.post(
     check('content', 'Content is required').exists(),
   ],
   async (req, res) => {
-    // const err = validationResult(req);
-    const { title, content, allow_comments } = req.body;
+    const err = validationResult(req);
+    const { title, content, category, status, allow_comments } = req.body;
+
+    if (!err.isEmpty()) {
+      return res.status(400).json({ errors: err.array() });
+    }
 
     let filename = '';
 
@@ -77,8 +98,9 @@ router.post(
         post_title: title,
         post_desc: content,
         file: filename,
+        category: category,
         allow_comments: allow_comments ? 'true' : 'false',
-        status: '60c50dc4e10a9750b826edc3',
+        status: status,
         comments: [],
       });
 
@@ -93,10 +115,22 @@ router.post(
 
 router.put('/:id', async (req, res) => {
   const err = validationResult(req);
-  const { title, content, status } = req.body;
+  const { title, content, category, allow_comments } = req.body;
 
   if (!err.isEmpty()) {
     return res.status(400).json({ errors: err.array() });
+  }
+
+  let filename = '';
+
+  if (!uploadIsEmpty(req.files)) {
+    let file = req.files.featuredImage;
+    const fileId = uuidv4();
+    filename = `${fileId}x${file.name}`;
+
+    file.mv('./public/uploads/' + filename, (err) => {
+      if (err) throw err;
+    });
   }
 
   try {
@@ -104,11 +138,13 @@ router.put('/:id', async (req, res) => {
 
     post.post_title = title;
     post.post_desc = content;
-    post.status = status;
+    post.file = filename;
+    post.category = category;
+    post.allow_comments = allow_comments ? 'true' : 'false';
 
     await post.save();
 
-    res.json(post);
+    res.redirect('/posts');
   } catch (error) {
     res.status(500).json({ message: 'Server Error' });
   }

@@ -30,12 +30,17 @@
             </div>
         </div>
         <div class="col-lg-4 col-md-4 col-sm-12">
+
             <div class="card shadow mb-4">
                 <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Date &amp; Status</h6>
+                    <h6 class="m-0 font-weight-bold text-primary">Status</h6>
                 </div>
                 <div class="card-body">
-                    Date
+                    <select class="w-100 p-2 btn btn-primary" name="status" id="status">
+                        {{#each status}}
+                        <option value={{id}}>{{status_name}}</option>
+                        {{/each}}
+                    </select>
                 </div>
             </div>
 
@@ -44,7 +49,11 @@
                     <h6 class="m-0 font-weight-bold text-primary">Category</h6>
                 </div>
                 <div class="card-body">
-                    Checkbox
+                    <select class="w-100 p-2 btn btn-primary" name="category" id="category">
+                        {{#each categories}}
+                        <option value={{id}}>{{category_name}}</option>
+                        {{/each}}
+                    </select>
                 </div>
             </div>
 
@@ -53,7 +62,7 @@
                     <h6 class="m-0 font-weight-bold text-primary">Featured Image</h6>
                 </div>
                 <div class="card-body">
-                    <input type="file" name="featuredImage" class="btn btn-primary w100" id="customFile">
+                    <input type="file" name="featuredImage" class="w-100 p-2 btn btn-primary w100" id="customFile">
                 </div>
             </div>
         </div>
