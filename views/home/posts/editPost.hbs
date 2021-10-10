@@ -1,10 +1,6 @@
 <div>
     <form action="/posts/{{post.id}}?_method=PUT" method="POST" enctype="multipart/form-data">
-        <div class="card mb-4 text-white bg-danger">
-            <div class="card-body">
-                Errors or Validation
-            </div>
-        </div>
+        {{> form-messages}}
 
         <div class="row">
             <div class="col-lg-8 col-md-8 col-sm-12">
@@ -15,11 +11,11 @@
                     <div class="card-body">
                         <div class="form-group">
                             <input type="text" name="title" class="form-control form-control-user"
-                                value="{{post.post_title}}">
+                                value="{{post.post_title}}" required>
                         </div>
                         <div class="form-group">
-                            <textarea class="form-control form-control-user" name="content" cols="30"
-                                rows="10">{{post.post_desc}}</textarea>
+                            <textarea class="form-control form-control-user" name="content" cols="30" rows="10"
+                                required>{{post.post_desc}}</textarea>
                         </div>
                         <div class="form-group">
                             <div class="custom-control custom-checkbox small">
@@ -39,7 +35,7 @@
                         <h6 class="m-0 font-weight-bold text-primary">Status</h6>
                     </div>
                     <div class="card-body">
-                        <select class="w-100 p-2 btn btn-primary" name="category" id="category">
+                        <select class="w-100 p-2 btn btn-primary" name="status" id="category">
                             {{#each status}}
                             <option value={{id}}>{{status_name}}</option>
                             {{/each}}
@@ -71,7 +67,7 @@
                         <p>No Image Uploaded</p>
                         {{/if}}
                         <input type="file" name="featuredImage" class="btn btn-primary w-100" id="featuredImage"
-                            value="./public/uploads/{{post.file}}">
+                            value="{{post.file}}">
                     </div>
                 </div>
             </div>

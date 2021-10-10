@@ -42,18 +42,33 @@ router.post(
     const err = validationResult(req);
     const { title } = req.body;
 
-    if (!err.isEmpty()) {
-      return res.status(400).json({ errors: err.array() });
-    }
+    // if (!err.isEmpty()) {
+    //   return res.status(400).json({ errors: err.array() });
+    // }
 
     try {
       const category = await new Category({
         category_name: title,
       });
 
-      await category.save();
+      if (!err.isEmpty()) {
+        const errorMsg = err.mapped();
+        let errorMsgValue = '';
+        const title = errorMsg?.title;
 
-      res.redirect('/category');
+        if (title) {
+          console.log('title');
+          errorMsgValue = 'Please fill in the missing field.';
+        }
+
+        req.flash('error_message', `${errorMsgValue}`);
+        res.redirect('/category');
+      } else {
+        await category.save().then((savedPost) => {
+          req.flash('success_message', 'Category was created successfully');
+          res.redirect('/category');
+        });
+      }
     } catch (error) {
       res.status(500).send('Server Error');
     }

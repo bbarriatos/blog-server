@@ -1,0 +1,58 @@
+<h1>Task</h1>
+<p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Debitis, cum autem ullam nostrum pariatur id provident, ut
+    quas at itaque distinctio nihil qui perferendis. Natus placeat quis doloribus cum nemo.</p>
+<p>
+    <a href="#" class="btn btn-primary btn-icon-split btn-md">
+        <span class="icon text-white-50">
+            <i class="fas fa-plus"></i>
+        </span>
+        <span class="text">Add Task</span>
+    </a>
+</p>
+
+{{> form-messages}}
+
+<div class="card shadow mb-12">
+    <div class="card-body">
+
+        <div class="col-sm-12 col-md-6">
+            <div id="dataTable_filter" class="dataTables_filter">
+                <label><span>Search:</span> <input type="search" class="form-control form-control-sm" placeholder=""
+                        aria-controls="dataTable"> <a href="#" class="btn btn-primary btn-icon-split btn-sm">
+                        <span class="text">Search</span>
+                    </a></label>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-striped" id="dataTable" width="100%" cellspacing="0">
+                <thead>
+                    <tr class="bg-primary text-white">
+                        <th width="100">#</th>
+                        <th width="180">Date Created</th>
+                        <th>Title</th>
+                        <th>Due Date</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                </tbody>
+                <tfoot>
+                    <tr class="bg-primary text-white">
+                        <th>#</th>
+                        <th>Date Created</th>
+                        <th>Title</th>
+                        <th>Due Date</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </tfoot>
+            </table>
+
+            <div class="dataTables_info" id="dataTable_info" role="status" aria-live="polite">Showing 1 to 1 of
+                {{number_of_post}} entries</div>
+        </div>
+    </div>
+</div>

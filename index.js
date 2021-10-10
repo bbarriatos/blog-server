@@ -17,6 +17,7 @@ const { isLoggedIn, isLoggedOut } = require('./config/authorizeUser');
 const upload = require('express-fileupload');
 const pageConfig = require('./config/defaultPageConfig');
 const User = require('./models/User');
+const flash = require('connect-flash');
 
 connectDB();
 
@@ -46,6 +47,14 @@ app.use(
     saveUninitialized: true,
   })
 );
+app.use(flash());
+app.use((req, res, next) => {
+  res.locals = {
+    success_message: req.flash('success_message'),
+    error_message: req.flash('error_message'),
+  };
+  next();
+});
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json({ extended: false }));
 app.use(methodOverride('_method'));
@@ -122,7 +131,7 @@ app.get('/logout', function (req, res) {
 app.use('/posts', isLoggedIn, require('./routes/Posts'));
 app.use('/category', isLoggedIn, require('./routes/Category'));
 // app.use('/api/status', require('./routes/Status'));
-// app.use('/api/task', require('./routes/Task'));
+app.use('/tasks', isLoggedIn, require('./routes/Tasks'));
 // app.use('/api/category', require('./routes/Category'));
 
 app.listen(5000, () => {

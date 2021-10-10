@@ -1,6 +1,10 @@
 <h1>Posts</h1>
 <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Debitis, cum autem ullam nostrum pariatur id provident, ut
     quas at itaque distinctio nihil qui perferendis. Natus placeat quis doloribus cum nemo.</p>
+
+
+{{> form-messages}}
+
 <div class="card shadow mb-12">
     <div class="card-body">
 
@@ -51,7 +55,7 @@
                             {{/if}}
                         </td>
                         <td>{{status.status_name}}</td>
-                        <td>User</td>
+                        <td>{{user.user_username}}</td>
                         <td>
                             <a href="/posts/{{_id}}" class="btn btn-success btn-circle btn-sm">
                                 <i class="fas fa-edit"></i>

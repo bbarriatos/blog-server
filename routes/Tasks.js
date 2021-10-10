@@ -1,13 +1,18 @@
 const express = require('express');
 const { check, validationResult } = require('express-validator');
-const Task = require('../models/Task');
+const Tasks = require('../models/Task');
 const router = express.Router();
+const { pageConfig } = require('../config/defaultPageConfig');
 
 router.get('/', async (req, res) => {
   try {
-    const status = await Task.find();
-
-    res.json(status);
+    Tasks.find({}).then((tasks) => {
+      res.render('home/tasks/tasks', {
+        ...pageConfig,
+        title: 'Tasks | Bon Blog Site',
+        bodyClass: `bg-gradient-primary`,
+      });
+    });
   } catch (error) {
     res.status(500).json({ message: 'Server Error' });
   }

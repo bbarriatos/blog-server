@@ -5,6 +5,7 @@ const { pageConfig, uploadDir } = require('../config/defaultPageConfig');
 const Posts = require('../models/Post');
 const Category = require('../models/Category');
 const Status = require('../models/Status');
+const User = require('../models/User');
 const { uploadIsEmpty } = require('../helpers/upload-helper');
 const router = express.Router();
 const fs = require('fs');
@@ -14,6 +15,7 @@ router.get('/', async (req, res) => {
     Posts.find({})
       .populate({ path: 'category', select: 'category_name -_id' })
       .populate({ path: 'status', select: 'status_name -_id' })
+      .populate('user')
       .then((posts) => {
         res.render('home/posts/posts', {
           ...pageConfig,
@@ -47,6 +49,7 @@ router.get('/addpost', async (req, res) => {
 
 router.get('/:postId', async (req, res) => {
   try {
+    const { category } = req.body;
     const categories = await Category.find();
     const status = await Status.find();
 
@@ -71,15 +74,11 @@ router.post(
   '/',
   [
     check('title', 'Title is required').isLength({ min: 1, max: 100 }),
-    check('content', 'Content is required').exists(),
+    check('content', 'Content is required').isLength({ min: 1, max: 10000 }),
   ],
   async (req, res) => {
     const err = validationResult(req);
     const { title, content, category, status, allow_comments } = req.body;
-
-    if (!err.isEmpty()) {
-      return res.status(400).json({ errors: err.array() });
-    }
 
     let filename = '';
 
@@ -101,12 +100,32 @@ router.post(
         category: category,
         allow_comments: allow_comments ? 'true' : 'false',
         status: status,
+        user: req.user.id,
         comments: [],
       });
 
-      await post.save();
+      if (!err.isEmpty()) {
+        const errorMsg = err.mapped();
+        let errorMsgValue = '';
+        const title = errorMsg?.title;
+        const content = errorMsg?.content;
 
-      res.redirect('/posts');
+        if (title && content) {
+          errorMsgValue = 'Please fill in the missing fields.';
+        } else if (content) {
+          errorMsgValue = content?.msg;
+        } else if (title) {
+          errorMsgValue = title?.msg;
+        }
+
+        req.flash('error_message', `${errorMsgValue}`);
+        res.redirect('/posts/addpost');
+      } else {
+        await post.save().then((savedPost) => {
+          req.flash('success_message', 'Post was created successfully');
+          res.redirect('/posts');
+        });
+      }
     } catch (error) {
       res.status(500).json({ message: 'Server Error' });
     }
@@ -115,36 +134,31 @@ router.post(
 
 router.put('/:id', async (req, res) => {
   const err = validationResult(req);
-  const { title, content, category, allow_comments } = req.body;
-
-  if (!err.isEmpty()) {
-    return res.status(400).json({ errors: err.array() });
-  }
-
-  let filename = '';
-
-  if (!uploadIsEmpty(req.files)) {
-    let file = req.files.featuredImage;
-    const fileId = uuidv4();
-    filename = `${fileId}x${file.name}`;
-
-    file.mv('./public/uploads/' + filename, (err) => {
-      if (err) throw err;
-    });
-  }
+  const { title, content, category, allow_comments, featuredImage } = req.body;
 
   try {
     const post = await Posts.findById(req.params.id);
 
     post.post_title = title;
     post.post_desc = content;
-    post.file = filename;
     post.category = category;
     post.allow_comments = allow_comments ? 'true' : 'false';
 
-    await post.save();
+    if (req.files !== null) {
+      let file = req.files.featuredImage;
+      const fileId = uuidv4();
+      const filename = `${fileId}x${file.name}`;
+      post.file = filename;
 
-    res.redirect('/posts');
+      file.mv('./public/uploads/' + filename, (err) => {
+        if (err) throw err;
+      });
+    }
+
+    await post.save().then((savedPost) => {
+      req.flash('success_message', 'Post was updated successfully');
+      res.redirect('/posts');
+    });
   } catch (error) {
     res.status(500).json({ message: 'Server Error' });
   }
@@ -154,8 +168,10 @@ router.delete('/:postId', async (req, res) => {
   try {
     Posts.findOne({ _id: req.params.postId }).then((post) => {
       fs.unlink(uploadDir + post.file, (err) => {
-        post.remove();
-        res.redirect('/posts');
+        post.remove().then((savedPost) => {
+          req.flash('success_message', 'Post was deleted successfully');
+          res.redirect('/posts');
+        });
       });
     });
   } catch (error) {
