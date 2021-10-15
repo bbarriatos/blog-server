@@ -18,6 +18,18 @@ router.get('/', async (req, res) => {
   }
 });
 
+router.get('/addTask', async (req, res) => {
+  try {
+    res.render('home/tasks/addTasks', {
+      ...pageConfig,
+      title: 'Add Task | Bon Blog Site',
+      bodyClass: `bg-gradient-primary`,
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Server Error' });
+  }
+});
+
 router.post(
   '/',
   [
