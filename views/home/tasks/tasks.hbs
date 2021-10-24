@@ -29,23 +29,43 @@
                 <thead>
                     <tr class="bg-primary text-white">
                         <th width="100">#</th>
-                        <th width="180">Date Created</th>
                         <th>Title</th>
                         <th>Due Date</th>
                         <th>Status</th>
+                        <th>User</th>
                         <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
+                    {{#each task_list}}
+                    <tr>
+                        <td>{{_id}}</td>
+                        <td>{{task_title}}</td>
+                        <td>{{task_due}}</td>
+                        <td>{{status.status_name}}</td>
+                        <td>{{user.user_username}}</td>
+                        <td>
+                            <a href="/tasks/{{_id}}" class="btn btn-success btn-circle btn-sm">
+                                <i class="fas fa-edit"></i>
+                            </a>
 
+                            <form action="/tasks/{{_id}}?_method=DELETE" method="post">
+                                <button class="btn btn-danger btn-circle btn-sm" type="submit"><i
+                                        class="fas fa-trash"></i></button>
+                            </form>
+                        </td>
+                        {{else}}
+                        <td class="text-danger text-center" colspan="6"><strong>No content</strong></td>
+                    </tr>
+                    {{/each}}
                 </tbody>
                 <tfoot>
                     <tr class="bg-primary text-white">
                         <th>#</th>
-                        <th>Date Created</th>
                         <th>Title</th>
                         <th>Due Date</th>
                         <th>Status</th>
+                        <th>User</th>
                         <th>Action</th>
                     </tr>
                 </tfoot>

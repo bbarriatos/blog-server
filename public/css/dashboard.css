@@ -2,3 +2,7 @@
     display: inline-block;
     width: auto;
 }
+
+.lightpick, .lightpick__month {
+    width: 100% !important;
+}

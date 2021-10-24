@@ -15,15 +15,15 @@ const TaskSchema = new Schema({
   },
   task_due: {
     type: String,
-    default: Date.now(),
   },
   user: {
     type: Schema.Types.ObjectId,
-    ref: 'user',
+    ref: 'users',
   },
   status: {
     type: Schema.Types.ObjectId,
     ref: 'status',
+    default: '6158a53a53aa9419a84e22b0',
   },
 });
 

@@ -1,4 +1,4 @@
-<form class="user" action="/posts" method="POST" enctype="multipart/form-data">
+<form class="user" action="/tasks" method="POST">
     {{> form-messages}}
     <div class="row">
         <div class="col-lg-8 col-md-8 col-sm-12">
@@ -8,18 +8,12 @@
                 </div>
                 <div class="card-body">
                     <div class="form-group">
-                        <input type="text" name="title" class="form-control form-control-user" id="exampleInputTitle"
+                        <input type="text" name="title" class="form-control form-control-user"
                             aria-describedby="titleHelp" placeholder="Title...">
                     </div>
                     <div class="form-group">
                         <textarea class="form-control form-control-user" name="content" placeholder="Content..."
                             cols="30" rows="10"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <div class="custom-control custom-checkbox small">
-                            <input type="checkbox" name="allow_comments" class="custom-control-input" id="customCheck">
-                            <label class="custom-control-label" for="customCheck">Allow Comments</label>
-                        </div>
                     </div>
                     <input type="submit" value="Submit" class="btn btn-primary btn-user btn-block">
                 </div>
@@ -32,7 +26,9 @@
                     <h6 class="m-0 font-weight-bold text-primary">Due Date</h6>
                 </div>
                 <div class="card-body">
-                    Date
+                    <div class="form-group">
+                        <input type="text" name="daterange" id="demo-1" class="mb-3 form-control form-control-user">
+                    </div>
                 </div>
             </div>
 
