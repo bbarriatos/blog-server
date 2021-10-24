@@ -2,7 +2,6 @@ const express = require('express');
 const { check, validationResult } = require('express-validator');
 const Tasks = require('../models/Task');
 const User = require('../models/User');
-const moment = require('moment');
 const router = express.Router();
 const { pageConfig } = require('../config/defaultPageConfig');
 const fs = require('fs');
