@@ -56,53 +56,55 @@ router.get('/:taskId', async (req, res) => {
   }
 });
 
-// router.get('/:postId', async (req, res) => {
-//   try {
-//     const { category } = req.body;
-//     const categories = await Category.find();
-//     const status = await Status.find();
+router.post(
+  '/',
+  [
+    check('title', 'Title is required').isLength({ min: 1, max: 100 }),
+    check('content', 'Content is required').isLength({ min: 1, max: 10000 }),
+    check('daterange', 'Set a due date').isLength({ min: 1, max: 100 }),
+  ],
+  async (req, res) => {
+    const err = validationResult(req);
+    const { title, content, daterange } = req.body;
 
-//     Posts.findOne({ _id: req.params.postId })
-//       .populate('category')
-//       .then((postData) => {
-//         res.render('home/posts/editPost', {
-//           ...pageConfig,
-//           title: 'Update Post | Bon Blog Site',
-//           bodyClass: `bg-gradient-primary`,
-//           post: postData,
-//           categories: categories,
-//           status: status.filter((stat) => stat.status_category === 'Posts'),
-//         });
-//       });
-//   } catch (error) {
-//     res.status(500).json({ message: 'Server Error' });
-//   }
-// });
+    try {
+      const task = await new Tasks({
+        task_title: title,
+        task_content: content,
+        task_due: daterange,
+        user: req.user.id,
+      });
 
-router.post('/', async (req, res) => {
-  // const err = validationResult(req);
-  const { title, content, daterange } = req.body;
+      if (!err.isEmpty()) {
+        const errorMsg = err.mapped();
+        let errorMsgValue = '';
+        const title = errorMsg?.title;
+        const content = errorMsg?.content;
+        const due = errorMsg?.daterange;
 
-  // if (!err.isEmpty()) {
-  //   return res.status(400).json({ errors: err.array() });
-  // }
+        if (title && content) {
+          errorMsgValue = 'Please fill in the missing fields.';
+        } else if (content) {
+          errorMsgValue = content?.msg;
+        } else if (title) {
+          errorMsgValue = title?.msg;
+        } else if (due) {
+          errorMsgValue = due?.msg;
+        }
 
-  try {
-    const task = await new Tasks({
-      task_title: title,
-      task_content: content,
-      task_due: daterange,
-      user: req.user.id,
-    });
-
-    await task.save().then((savedPost) => {
-      req.flash('success_message', 'Task was created successfully');
-      res.redirect('/tasks');
-    });
-  } catch (error) {
-    res.status(500).json({ message: 'Server Error' });
+        req.flash('error_message', `${errorMsgValue}`);
+        res.redirect('/tasks/addTask');
+      } else {
+        await task.save().then((savedPost) => {
+          req.flash('success_message', 'Task was created successfully');
+          res.redirect('/tasks');
+        });
+      }
+    } catch (error) {
+      res.status(500).json({ message: 'Server Error' });
+    }
   }
-});
+);
 
 router.put('/:id', async (req, res) => {
   // const err = validationResult(req);
