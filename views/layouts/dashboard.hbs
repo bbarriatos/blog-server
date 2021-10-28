@@ -64,13 +64,16 @@
         const day = new Date();
         const today = day.getDate() - 1;
 
-        const picker = new Lightpick({
-            field: document.getElementById('demo-1'),
+        const addPicker = new Lightpick({
+            field: document.getElementById('addPicker'),
             singleDate: false,
             inline: true,
             minDate: moment().startOf('month').add(today, 'day'),
         });
+
+
     </script>
+
 </body>
 
 </html>
