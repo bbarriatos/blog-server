@@ -130,6 +130,7 @@ app.get('/logout', function (req, res) {
 // app.use('/register', require('./routes/User'));
 app.use('/posts', isLoggedIn, require('./routes/Posts'));
 app.use('/category', isLoggedIn, require('./routes/Category'));
+app.use('/logs', isLoggedIn, require('./routes/Logs'));
 // app.use('/api/status', require('./routes/Status'));
 app.use('/tasks', isLoggedIn, require('./routes/Tasks'));
 // app.use('/api/category', require('./routes/Category'));

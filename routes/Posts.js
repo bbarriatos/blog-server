@@ -6,6 +6,7 @@ const Posts = require('../models/Post');
 const Category = require('../models/Category');
 const Status = require('../models/Status');
 const User = require('../models/User');
+const Logs = require('../models/ActivityLogs');
 const { uploadIsEmpty } = require('../helpers/upload-helper');
 const router = express.Router();
 const fs = require('fs');
@@ -122,6 +123,16 @@ router.post(
         res.redirect('/posts/addpost');
       } else {
         await post.save().then((savedPost) => {
+          const log = new Logs({
+            user: req.user,
+            category: null,
+            post: savedPost.id,
+            task: null,
+            note: `${req.user.user_username} added new post`,
+          });
+
+          log.save();
+
           req.flash('success_message', 'Post was created successfully');
           res.redirect('/posts');
         });
@@ -156,6 +167,16 @@ router.put('/:id', async (req, res) => {
     }
 
     await post.save().then((savedPost) => {
+      const log = new Logs({
+        user: req.user,
+        category: null,
+        post: savedPost.id,
+        task: null,
+        note: `${req.user.user_username} updated a post`,
+      });
+
+      log.save();
+
       req.flash('success_message', 'Post was updated successfully');
       res.redirect('/posts');
     });
@@ -169,6 +190,16 @@ router.delete('/:postId', async (req, res) => {
     Posts.findOne({ _id: req.params.postId }).then((post) => {
       fs.unlink(uploadDir + post.file, (err) => {
         post.remove().then((savedPost) => {
+          const log = new Logs({
+            user: req.user,
+            category: null,
+            post: savedPost.id,
+            task: null,
+            note: `${req.user.user_username} deleted post`,
+          });
+
+          log.save();
+
           req.flash('success_message', 'Post was deleted successfully');
           res.redirect('/posts');
         });

@@ -3,6 +3,7 @@ const { check, validationResult } = require('express-validator');
 const Tasks = require('../models/Task');
 const Category = require('../models/Category');
 const Status = require('../models/Status');
+const Logs = require('../models/ActivityLogs');
 const router = express.Router();
 const { pageConfig } = require('../config/defaultPageConfig');
 const fs = require('fs');
@@ -95,7 +96,17 @@ router.post(
         req.flash('error_message', `${errorMsgValue}`);
         res.redirect('/tasks/addTask');
       } else {
-        await task.save().then((savedPost) => {
+        await task.save().then((savedTask) => {
+          const log = new Logs({
+            user: req.user,
+            category: null,
+            post: null,
+            task: savedTask.id,
+            note: `${req.user.user_username} added new task`,
+          });
+
+          log.save();
+
           req.flash('success_message', 'Task was created successfully');
           res.redirect('/tasks');
         });
@@ -107,12 +118,7 @@ router.post(
 );
 
 router.put('/:id', async (req, res) => {
-  // const err = validationResult(req);
   const { title, content, daterange, status } = req.body;
-
-  // if (!err.isEmpty()) {
-  //   return res.status(400).json({ errors: err.array() });
-  // }
 
   try {
     const task = await Tasks.findById(req.params.id);
@@ -123,6 +129,16 @@ router.put('/:id', async (req, res) => {
     task.status = status;
 
     await task.save().then(() => {
+      const log = new Logs({
+        user: req.user,
+        category: null,
+        post: null,
+        task: savedTask.id,
+        note: `${req.user.user_username} updated a task`,
+      });
+
+      log.save();
+
       req.flash('success_message', 'Task was updated successfully');
       res.redirect('/tasks');
     });
@@ -135,7 +151,17 @@ router.delete('/:id', async (req, res) => {
   try {
     const task_due = await Tasks.findByIdAndDelete(req.params.id);
 
-    await task_due.remove().then((savedPost) => {
+    await task_due.remove().then((savedTask) => {
+      const log = new Logs({
+        user: req.user,
+        category: null,
+        post: null,
+        task: savedTask.id,
+        note: `${req.user.user_username} deleted a task`,
+      });
+
+      log.save();
+
       req.flash('success_message', 'Task deleted successfully');
       res.redirect('/tasks');
     });

@@ -15,6 +15,13 @@ const LogsSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'tasks',
   },
+  category: {
+    type: Schema.Types.ObjectId,
+    ref: 'category',
+  },
+  note: {
+    type: String,
+  },
 });
 
 module.exports = mongoose.model('logs', LogsSchema);
