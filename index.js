@@ -127,7 +127,7 @@ app.get('/logout', function (req, res) {
   res.redirect('/');
 });
 
-// app.use('/register', require('./routes/User'));
+app.use('/register', require('./routes/User'));
 app.use('/posts', isLoggedIn, require('./routes/Posts'));
 app.use('/category', isLoggedIn, require('./routes/Category'));
 app.use('/logs', isLoggedIn, require('./routes/Logs'));
