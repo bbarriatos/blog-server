@@ -1,1 +1,75 @@
 <h1>Users</h1>
+<p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Debitis, cum autem ullam nostrum pariatur id provident, ut
+    quas at itaque distinctio nihil qui perferendis. Natus placeat quis doloribus cum nemo.</p>
+<p>
+    <a href="/users/addUser" class="btn btn-primary btn-icon-split btn-md">
+        <span class="icon text-white-50">
+            <i class="fas fa-plus"></i>
+        </span>
+        <span class="text">Add User</span>
+    </a>
+</p>
+
+{{> form-messages}}
+
+<div class="card shadow mb-12">
+    <div class="card-body">
+
+        <div class="col-sm-12 col-md-6">
+            <div id="dataTable_filter" class="dataTables_filter">
+                <label><span>Search:</span> <input type="search" class="form-control form-control-sm" placeholder=""
+                        aria-controls="dataTable"> <a href="#" class="btn btn-primary btn-icon-split btn-sm">
+                        <span class="text">Search</span>
+                    </a></label>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-striped" id="dataTable" width="100%" cellspacing="0">
+                <thead>
+                    <tr class="bg-primary text-white">
+                        <th width="100">#</th>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Admin</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each users}}
+                    <tr>
+                        <td>{{id}}</td>
+                        <td>{{user_username}}</td>
+                        <td>{{user_email}}</td>
+                        <td>{{#if user_admin}}
+                            <input type="checkbox" id="adminCheck" disabled="true" checked>
+                            {{else}}
+                            <input type="checkbox" id="adminCheck" disabled="true">
+                            {{/if}}
+                        </td>
+                        <td>
+                            <a href="/users/{{id}}" class="btn btn-success btn-circle btn-sm">
+                                <i class="fas fa-edit"></i>
+                            </a>
+
+                            <form action="/users/{{id}}?_method=DELETE" method="post">
+                                <button class="btn btn-danger btn-circle btn-sm" type="submit"><i
+                                        class="fas fa-trash"></i></button>
+                            </form>
+                        </td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+                <tfoot>
+                    <tr class="bg-primary text-white">
+                        <th>#</th>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Admin</th>
+                        <th>Action</th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</div>
