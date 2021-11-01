@@ -64,6 +64,7 @@ router.post(
         user_username: username,
         user_email: email,
         user_password: password,
+        user_admin: true,
       });
 
       const salt = await bcrypt.genSalt(10);
@@ -79,7 +80,8 @@ router.post(
 
       jwt.sign(payload, uniqid(), { expiresIn: 360000 }, (err, token) => {
         if (err) throw err;
-        res.render('home/index', { title: 'Home | Bon Blog Site' });
+        res.redirect('/login');
+        // res.render('home/index', { title: 'Home | Bon Blog Site' });
       });
     } catch (error) {
       res.status(500).send('Server Error');

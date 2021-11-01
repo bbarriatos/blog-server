@@ -127,13 +127,12 @@ app.get('/logout', function (req, res) {
   res.redirect('/');
 });
 
-app.use('/register', require('./routes/User'));
 app.use('/posts', isLoggedIn, require('./routes/Posts'));
 app.use('/category', isLoggedIn, require('./routes/Category'));
 app.use('/logs', isLoggedIn, require('./routes/Logs'));
-// app.use('/api/status', require('./routes/Status'));
 app.use('/tasks', isLoggedIn, require('./routes/Tasks'));
-// app.use('/api/category', require('./routes/Category'));
+app.use('/register', require('./routes/Register'));
+app.use('/users', isLoggedIn, require('./routes/Users'));
 
 app.listen(5000, () => {
   console.log(`Listening on port 5000`);
