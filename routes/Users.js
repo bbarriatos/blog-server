@@ -16,7 +16,7 @@ router.get('/', async (req, res) => {
         ...defaultPageConfig,
         title: 'Users | Bon Blog Site',
         bodyClass: `bg-gradient-primary`,
-        users: user,
+        users: user.filter((userId) => userId.id !== req.user.id),
       });
     });
   } catch (error) {
@@ -30,6 +30,21 @@ router.get('/addUser', async (req, res) => {
       ...defaultPageConfig,
       title: 'Add User | Bon Blog Site',
       bodyClass: `bg-gradient-primary`,
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Server Error' });
+  }
+});
+
+router.get('/:userId', async (req, res) => {
+  try {
+    User.findOne({ _id: req.params.userId }).then((userData) => {
+      res.render('home/users/editUser', {
+        ...defaultPageConfig,
+        title: 'Update User | Bon Blog Site',
+        bodyClass: `bg-gradient-primary`,
+        user: userData,
+      });
     });
   } catch (error) {
     res.status(500).json({ message: 'Server Error' });
@@ -91,6 +106,32 @@ router.post(
     }
   }
 );
+
+router.put('/:id', async (req, res) => {
+  const { username, email, password, confirmPassword } = req.body;
+
+  try {
+    const user = await User.findById(req.params.id);
+
+    user.user_username = username;
+    user.user_email = email;
+
+    if (password === confirmPassword) {
+      const salt = await bcrypt.genSalt(10);
+      user.user_password = await bcrypt.hash(user.user_password, salt);
+
+      await user.save().then(() => {
+        req.flash('success_message', 'Task was updated successfully');
+        res.redirect('/users');
+      });
+    } else {
+      req.flash('error_message', 'Password mismatch');
+      res.redirect(`/users/${req.params.id}`);
+    }
+  } catch (error) {
+    res.status(500).json({ message: 'Server Error' });
+  }
+});
 
 router.delete('/:id', async (req, res) => {
   try {

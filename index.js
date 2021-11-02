@@ -106,6 +106,7 @@ app.get('/login', isLoggedOut, (req, res) => {
   try {
     res.render('main', {
       ...pageConfig,
+      title: 'Login | Bon Blog Site',
       bodyClass: 'bg-gradient-primary',
       error: req.query.error,
     });
