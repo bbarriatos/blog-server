@@ -1,12 +1,10 @@
 const express = require('express');
 const { check, validationResult } = require('express-validator');
 const Tasks = require('../models/Task');
-const Category = require('../models/Category');
 const Status = require('../models/Status');
 const Logs = require('../models/ActivityLogs');
 const router = express.Router();
 const { pageConfig } = require('../config/defaultPageConfig');
-const fs = require('fs');
 
 router.get('/', async (req, res) => {
   try {
@@ -128,7 +126,7 @@ router.put('/:id', async (req, res) => {
     task.task_due = daterange;
     task.status = status;
 
-    await task.save().then(() => {
+    await task.save().then((savedTask) => {
       const log = new Logs({
         user: req.user,
         category: null,
